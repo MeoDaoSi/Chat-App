@@ -13,14 +13,18 @@ app.use(express.static(publicPath));
 // get port server
 const port = process.env.PORT || 3000
 
-let count = 0;
-
 io.on('connection', (socket) => {
     console.log('New websocket connection!');
-    socket.emit('countUpdate',count);
-    socket.on('increment',() => {
-        count++;
-        io.emit('countUpdate',count);
+    socket.emit('message','welcome!');
+    socket.broadcast.emit('message','A new user has joined!');
+    socket.on('send_massage', (data) => {
+        io.emit('message',data)
+    })
+    socket.on('share_location', (position) => {
+        socket.broadcast.emit('message',`https://google.com/maps?q=${position.latitude},${position.longitude}`);
+    })
+    socket.on('disconnect', () => {
+        io.emit('message','A user has left!')
     })
 })
 
