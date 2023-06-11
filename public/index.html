@@ -4,20 +4,22 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/styles.min.css">
+    <link rel="icon" href="./img/My project.png">
     <title>CHAT APP</title>
 </head>
 <body>
-    CHAT APP
-    <br>
-    Send to message!
-    <form id="message_input">
-        <input class="message" style="background-color: #ccc;" type="text">
-        <button style="background-color: #ccc;">Submit</button>
-    </form>
-    Share Location
-    <button id="share_location" style="background-color: #ccc;" >Share</button>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="./js/chat.js"></script>
+    <div class="centered-form">
+        <div class="centered-form__box">
+            <h1>Join</h1>
+            <form action="./chat.html">
+                <label for="">Display name</label>
+                <input type="text" name="username" placeholder="Display name" required>
+                <label for="">Room</label>
+                <input type="text" name="room" placeholder="Room" required>
+                <button>Join</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

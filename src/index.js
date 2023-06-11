@@ -3,6 +3,7 @@ const path = require('path');
 const { Server } = require('socket.io');
 const http = require('http');
 const Filter = require('bad-words');
+const { messGenerate, locationMessGenerate } = require('../public/utils/message');
 
 const app = express();
 const server = http.createServer(app);
@@ -16,22 +17,22 @@ const port = process.env.PORT || 3000
 
 io.on('connection', (socket) => {
     console.log('New websocket connection!');
-    socket.emit('message','welcome!');
-    socket.broadcast.emit('message','A new user has joined!');
+    socket.emit('message',messGenerate('welcome!'));
+    socket.broadcast.emit('message',messGenerate('A new user has joined!'));
     socket.on('send_massage', (data,callback) => {
         const filter = new Filter;
         if(filter.isProfane(data)){
             return callback(true)
         }
-        io.emit('message',data);
+        io.emit('message',messGenerate(data));
         callback();
     })
     socket.on('share_location', (position,callback) => {
-        socket.broadcast.emit('message',`https://google.com/maps?q=${position.latitude},${position.longitude}`);
+        io.emit('location_render',locationMessGenerate(`https://google.com/maps?q=${position.latitude},${position.longitude}`));
         callback();
     })
     socket.on('disconnect', () => {
-        io.emit('message','A user has left!')
+        io.emit('message',messGenerate('A user has left!'))
     })
 })
 
