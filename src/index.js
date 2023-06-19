@@ -17,8 +17,12 @@ const port = process.env.PORT || 3000
 
 io.on('connection', (socket) => {
     console.log('New websocket connection!');
-    socket.emit('message',messGenerate('welcome!'));
-    socket.broadcast.emit('message',messGenerate('A new user has joined!'));
+    
+    socket.on('join',({username, room}) => {
+        socket.join(room);
+        socket.emit('message',messGenerate('welcome!'));
+        socket.broadcast.to(room).emit('message',messGenerate(`${username} has joined!`));
+    })
     socket.on('send_massage', (data,callback) => {
         const filter = new Filter;
         if(filter.isProfane(data)){

@@ -6,9 +6,13 @@ const messageFormInput = messageForm.querySelector('.message');
 const messageFormButton = messageForm.querySelector('button');
 const shareFormButton = document.querySelector('#share_location');
 const messageRendering = document.querySelector('#flash_message');
+
+// template
 const messageTemplate = document.querySelector('#mess_template').innerHTML;
 const locationMessageTemplate = document.querySelector('#location_mess_template').innerHTML;
 
+// query parameter
+const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true });
 
 socket.on('message', (message) => {
     const html = Mustache.render(messageTemplate, {
@@ -58,3 +62,5 @@ shareFormButton.addEventListener('click', () => {
         );
     });
 })
+
+socket.emit('join', { username, room } );
