@@ -3,7 +3,13 @@ const path = require('path');
 const { Server } = require('socket.io');
 const http = require('http');
 const Filter = require('bad-words');
-const { messGenerate, locationMessGenerate } = require('../public/utils/message');
+const { messGenerate, locationMessGenerate } = require('./utils/message');
+const {
+    addUser,
+    removeUser,
+    getUser,
+    getUsersInRoom
+} = require('./utils/users')
 
 const app = express();
 const server = http.createServer(app);
@@ -18,10 +24,19 @@ const port = process.env.PORT || 3000
 io.on('connection', (socket) => {
     console.log('New websocket connection!');
     
-    socket.on('join',({username, room}) => {
-        socket.join(room);
+    socket.on('join',(options,callback) => {
+        const {error, user} = addUser({
+            id: socket.id,
+            ...options
+        })
+        if(error){
+            return callback(error);
+        }
+        console.log(user.room);
+        socket.join(user.room);
         socket.emit('message',messGenerate('welcome!'));
-        socket.broadcast.to(room).emit('message',messGenerate(`${username} has joined!`));
+        socket.broadcast.to(user.room).emit('message',messGenerate(`${user.username} has joined!`));
+        callback();
     })
     socket.on('send_massage', (data,callback) => {
         const filter = new Filter;
@@ -36,7 +51,10 @@ io.on('connection', (socket) => {
         callback();
     })
     socket.on('disconnect', () => {
-        io.emit('message',messGenerate('A user has left!'))
+        const user = removeUser(socket.id);
+        if(user){
+            io.to(user.room).emit('message',messGenerate(`${user.username} has left!`));
+        }
     })
 })
 
