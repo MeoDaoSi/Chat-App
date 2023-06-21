@@ -34,26 +34,34 @@ io.on('connection', (socket) => {
         }
         console.log(user.room);
         socket.join(user.room);
-        socket.emit('message',messGenerate('welcome!'));
+        socket.emit('message',messGenerate('Admin','welcome!'));
         socket.broadcast.to(user.room).emit('message',messGenerate(`${user.username} has joined!`));
         callback();
     })
     socket.on('send_massage', (data,callback) => {
+        const user = getUser(socket.id);
+        if(!user){
+            return;
+        }
         const filter = new Filter;
         if(filter.isProfane(data)){
             return callback(true)
         }
-        io.emit('message',messGenerate(data));
+        io.to(user.room).emit('message',messGenerate(user.username,data));
         callback();
     })
     socket.on('share_location', (position,callback) => {
-        io.emit('location_render',locationMessGenerate(`https://google.com/maps?q=${position.latitude},${position.longitude}`));
+        const user = getUser(socket.id);
+        if(!user){
+            return;
+        }
+        io.to(user.room).emit('location_render',locationMessGenerate(user.username,`https://google.com/maps?q=${position.latitude},${position.longitude}`));
         callback();
     })
     socket.on('disconnect', () => {
         const user = removeUser(socket.id);
         if(user){
-            io.to(user.room).emit('message',messGenerate(`${user.username} has left!`));
+            io.to(user.room).emit('message',messGenerate('Admin',`${user.username} has left!`));
         }
     })
 })

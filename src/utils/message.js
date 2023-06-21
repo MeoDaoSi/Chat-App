@@ -1,14 +1,16 @@
 const moment = require('moment');
 
-const messGenerate = (message) => {
+const messGenerate = (username,message) => {
     return {
+        username,
         message,
         createAt: moment(new Date()).format('LT'),
     }
 }
 
-const locationMessGenerate = (location) => {
+const locationMessGenerate = (username,location) => {
     return {
+        username,
         location,
         createAt: moment(new Date()).format('LT'),
     }
